@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广东省广建设计集团有限公司 - 办公点位查询辅助系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #1a5d1a; /* 深绿色 */
+            --secondary: #2e7d32; /* 森林绿 */
+            --accent: #4caf50; /* 环保绿 */
+            --accent2: #8bc34a; /* 亮绿色 */
+            --light: #f8fff8; /* 浅绿色背景 */
+            --dark: #1c2e1c; /* 深墨绿 */
+            --success: #4caf50;
+            --floor5: #4caf50; /* 5楼绿色 */
+            --floor6: #8bc34a; /* 6楼黄绿色 */
+            --floor7: #2e7d32; /* 7楼森林绿 */
+            --floor8: #1b5e20; /* 8楼深绿 */
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f8f0, #e0f0e0);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            height: 40px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-img {
+            height: 100px;
+            width: auto;
+            max-width: 800px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+        
+        header {
+            text-align: center;
+            margin: 0 0 30px;
+            padding: 30px 20px;
+            border-radius: 15px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="0,0 100,0 100,100" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 10px 20px;
+            text-align: center;
+            min-width: 150px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .search-container:hover {
+            transform: translateY(-5px);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        #searchInput {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        #searchInput:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+        
+        #searchButton {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #searchButton:hover {
+            background: #3d8b40;
+            transform: scale(1.03);
+        }
+        
+        .result-container {
+            min-height: 80px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .result-container.highlight {
+            background: #e8f5e9;
+            animation: highlight 1s ease;
+        }
+        
+        @keyframes highlight {
+            0% { background-color: #ffffff; }
+            50% { background-color: #c8e6c9; }
+            100% { background-color: #e8f5e9; }
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .dept-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .floor-tag {
+            background: var(--accent);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .floor-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .floor-nav-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 100px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .floor-nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .floor-nav-btn[data-floor="5"]::before { background: var(--floor5); }
+        .floor-nav-btn[data-floor="6"]::before { background: var(--floor6); }
+        .floor-nav-btn[data-floor="7"]::before { background: var(--floor7); }
+        .floor-nav-btn[data-floor="8"]::before { background: var(--floor8); }
+        
+        .floor-nav-btn:hover, .floor-nav-btn.active {
+            color: white;
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .floor-nav-btn[data-floor="5"]:hover, 
+        .floor-nav-btn[data-floor="5"].active { background: var(--floor5); }
+        
+        .floor-nav-btn[data-floor="6"]:hover, 
+        .floor-nav-btn[data-floor="6"].active { background: var(--floor6); }
+        
+        .floor-nav-btn[data-floor="7"]:hover, 
+        .floor-nav-btn[data-floor="7"].active { background: var(--floor7); }
+        
+        .floor-nav-btn[data-floor="8"]:hover, 
+        .floor-nav-btn[data-floor="8"].active { background: var(--floor8); }
+        
+        .floors-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .floor-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .floor-header {
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            position: relative;
+        }
+        
+        .floor-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.9;
+            z-index: 1;
+        }
+        
+        .floor-card[data-floor="5"] .floor-header::after { background: linear-gradient(90deg, var(--floor5), var(--accent2)); }
+        .floor-card[data-floor="6"] .floor-header::after { background: linear-gradient(90deg, var(--floor6), var(--accent2)); }
+        .floor-card[data-floor="7"] .floor-header::after { background: linear-gradient(90deg, var(--floor7), var(--accent2)); }
+        .floor-card[data-floor="8"] .floor-header::after { background: linear-gradient(90deg, var(--floor8), var(--accent2)); }
+        
+        .floor-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .floor-count {
+            background: rgba(255,255,255,0.25);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 2;
+            font-size: 1.2rem;
+        }
+        
+        .floor-card.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .floor-content {
+            display: flex;
+            gap: 20px;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+        
+        .floor-card.open .floor-content {
+            max-height: 800px;
+            padding: 25px;
+        }
+        
+        .departments-list {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            list-style: none;
+        }
+        
+        .departments-list li {
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .departments-list li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .departments-list li i {
+            margin-right: 15px;
+            color: var(--accent);
+            width: 24px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .floor-map {
+            flex: 0 0 300px;
+            background: #f0f8f0;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .map-container:hover .map-image {
+            transform: scale(1.03);
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .map-container:hover .map-overlay {
+            opacity: 1;
+        }
+        
+        .map-overlay i {
+            color: white;
+            font-size: 2rem;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            padding: 10px;
+        }
+        
+        .match-highlight {
+            background-color: #e8f5e9;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .note-badge {
+            background: #c8e6c9;
+            color: #1b5e20;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        footer {
+            margin-top: 20px;
+            color: var(--dark);
+            text-align: center;
+            padding: 25px;
+            font-size: 0.95rem;
+            border-top: 1px solid #e0e0e0;
+            width: 100%;
+            background: #f0f8f0;
+            border-radius: 10px;
+        }
+        
+        /* 图片放大模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 1200px;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .download-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .download-btn:hover {
+            background: #3d8b40;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 1100px) {
+            .floor-content {
+                flex-direction: column;
+            }
+            
+            .floor-map {
+                flex: none;
+                width: 100%;
+            }
+            
+            .logo-container {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin: 20px auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+            
+            #searchButton {
+                padding: 16px;
+                justify-content: center;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .floor-nav {
+                gap: 8px;
+            }
+            
+            .floor-nav-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                min-width: 80px;
+            }
+            
+            .departments-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* 建筑装饰元素 */
+        .building-decoration {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to right, #1a5d1a, #2e7d32, #4caf50, #8bc34a);
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .arch-element {
+            position: absolute;
+            top: 0;
+            right: 5%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50% 50% 0 0;
+            border: 3px solid rgba(26, 93, 26, 0.1);
+            border-bottom: none;
+            z-index: -1;
+        }
+        
+        .leaf-icon {
+            position: absolute;
+            color: rgba(76, 175, 80, 0.2);
+            font-size: 1.5rem;
+            z-index: -1;
+        }
+        
+        .leaf-1 { top: 10%; left: 5%; transform: rotate(-20deg); }
+        .leaf-2 { top: 15%; right: 10%; transform: rotate(30deg); }
+        .leaf-3 { bottom: 20%; left: 15%; transform: rotate(15deg); }
+        .leaf-4 { bottom: 25%; right: 20%; transform: rotate(-15deg); }
+    </style>
+</head>
+<body>
+    <!-- 建筑装饰元素 -->
+    <div class="building-decoration"></div>
+    <div class="arch-element"></div>
+    <i class="fas fa-leaf leaf-icon leaf-1"></i>
+    <i class="fas fa-leaf leaf-icon leaf-2"></i>
+    <i class="fas fa-leaf leaf-icon leaf-3"></i>
+    <i class="fas fa-leaf leaf-icon leaf-4"></i>
+    
+    <!-- 图片放大模态框 -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="expandedImage">
+    </div>
+    
+    <div class="logo-container">
+        <img src="logo.png" alt="公司Logo" class="logo-img">
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-building"></i> 广东省广建设计集团有限公司 - 办公点位查询辅助系统</h1>
+            <p>输入部门名称查询所在楼层，支持模糊搜索与楼层导航 | 覆盖5-8楼所有部门</p>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">楼层</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">49</div>
+                    <div class="stat-label">部门</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">设计院</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">研究中心</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="输入部门名称，如：岩土二所、审图公司...">
+                <button id="searchButton"><i class="fas fa-search"></i> 查询</button>
+            </div>
+            <div class="result-container" id="result">
+                输入部门名称查询所在楼层
+            </div>
+        </div>
+        
+        <div class="floor-nav">
+            <button class="floor-nav-btn" data-floor="5"><i class="fas fa-building"></i> 5楼</button>
+            <button class="floor-nav-btn" data-floor="6"><i class="fas fa-building"></i> 6楼</button>
+            <button class="floor-nav-btn" data-floor="7"><i class="fas fa-building"></i> 7楼</button>
+            <button class="floor-nav-btn" data-floor="8"><i class="fas fa-building"></i> 8楼</button>
+        </div>
+        
+        <div class="floors-container">
+            <!-- 5楼 -->
+            <div class="floor-card open" data-floor="5">
+                <div class="floor-header">
+                    <div class="floor-title">
+                        <i class="fas fa-layer-group"></i> 
+                        <span>5楼 - 设计院与研究所 <span class="floor-count">16个部门</span></span>
+                    </div>
+                    <div class="toggle-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="floor-content">
+                    <ul class="departments-list">
+                        <li><i class="fas fa-drafting-compass"></i> 岩土二所</li>
+                        <li><i class="fas fa-lightbulb"></i> 创研二所</li>
+                        <li><i class="fas fa-lightbulb"></i> 创研一所</li>
+                        <li><i class="fas fa-shield-alt"></i> 人防设计所</li>
+                        <li><i class="fas fa-code-branch"></i> 东莞分公司</li>
+                        <li><i class="fas fa-landmark"></i> 古色所</li>
+                        <li><i class="fas fa-drafting-compass"></i> 建筑七所</li>
+                        <li><i class="fas fa-road"></i> 市政设计一院</li>
+                        <li><i class="fas fa-leaf"></i> 环保一所</li>
+                        <li><i class="fas fa-drafting-compass"></i> 建筑一所</li>
+                        <li><i class="fas fa-building"></i> 第一综合设计院</li>
+                        <li><i class="fas fa-cogs"></i> 第一综合设计院设备所</li>
+                        <li><i class="fas fa-water"></i> 水利二所</li>
+                        <li><i class="fas fa-road"></i> 市政设计二院</li>
+                        <li><i class="fas fa-hard-hat"></i> 城建七所</li>
+                        <li><i class="fas fa-hard-hat"></i> 城建九所</li>
+                    </ul>
+                    <div class="floor-map">
+                        <h3><i class="fas fa-map"></i> 5楼平面图</h3>
+                        <div class="map-container">
+                            <img src="5.jpg" alt="5楼平面图" class="map-image">
+                            <div class="map-overlay">
+                                <i class="fas fa-search-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 6楼 -->
+            <div class="floor-card" data-floor="6">
+                <div class="floor-header">
+                    <div class="floor-title">
+                        <i class="fas fa-layer-group"></i> 
+                        <span>6楼 - 规划与咨询中心 <span class="floor-count">12个部门</span></span>
+                    </div>
+                    <div class="toggle-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="floor-content">
+                    <ul class="departments-list">
+                        <li><i class="fas fa-clipboard-check"></i> 审图公司</li>
+                        <li><i class="fas fa-chart-line"></i> 市场营销中心</li>
+                        <li><i class="fas fa-palette"></i> 环艺二所</li>
+                        <li><i class="fas fa-palette"></i> 环艺一所</li>
+                        <li><i class="fas fa-palette"></i> 环艺三所</li>
+                        <li><i class="fas fa-laptop-code"></i> 华凯数字所</li>
+                        <li><i class="fas fa-draw-polygon"></i> 规划咨询设计院-市政规划所</li>
+                        <li><i class="fas fa-map-marked-alt"></i> 规划五所</li>
+                        <li><i class="fas fa-tasks"></i> 项目管理中心</li>
+                        <li><i class="fas fa-map-marked-alt"></i> 规划一所</li>
+                        <li><i class="fas fa-search"></i> 规划研究所</li>
+                        <li><i class="fas fa-microchip"></i> 智能化一所</li>
+                    </ul>
+                    <div class="floor-map">
+                        <h3><i class="fas fa-map"></i> 6楼平面图</h3>
+                        <div class="map-container">
+                            <img src="6.jpg" alt="6楼平面图" class="map-image">
+                            <div class="map-overlay">
+                                <i class="fas fa-search-plus"></i>
+                            </div>
+                        </div>
+           
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 7楼 -->
+            <div class="floor-card" data-floor="7">
+                <div class="floor-header">
+                    <div class="floor-title">
+                        <i class="fas fa-layer-group"></i> 
+                        <span>7楼 - 行政与职能中心 <span class="floor-count">7个部门</span></span>
+                    </div>
+                    <div class="toggle-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="floor-content">
+                    <ul class="departments-list">
+                        <li><i class="fas fa-briefcase"></i> 办公室</li>
+                        <li><i class="fas fa-chart-line"></i> 经营发展部</li>
+                        <li><i class="fas fa-users"></i> 党群人事部</li>
+                        <li><i class="fas fa-calculator"></i> 财务部</li>
+                        <li><i class="fas fa-laptop"></i> 科技信息部</li>
+                        <li><i class="fas fa-clipboard-check"></i> 审图中心</li>
+                        <li><i class="fas fa-lightbulb"></i> 方案中心</li>
+                    </ul>
+                    <div class="floor-map">
+                        <h3><i class="fas fa-map"></i> 7楼平面图</h3>
+                        <div class="map-container">
+                            <img src="7.jpg" alt="7楼平面图" class="map-image">
+                            <div class="map-overlay">
+                                <i class="fas fa-search-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 8楼 -->
+            <div class="floor-card" data-floor="8">
+                <div class="floor-header">
+                    <div class="floor-title">
+                        <i class="fas fa-layer-group"></i> 
+                        <span>8楼 - 建筑设计中心 <span class="floor-count">13个部门</span></span>
+                    </div>
+                    <div class="toggle-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="floor-content">
+                    <ul class="departments-list">
+                        <li><i class="fas fa-map-marked-alt"></i> 规划二所</li>
+                        <li><i class="fas fa-hard-hat"></i> 城建一所</li>
+                        <li><i class="fas fa-cogs"></i> 设备二所</li>
+                        <li><i class="fas fa-cogs"></i> 设备一所</li>
+                        <li><i class="fas fa-building"></i> 第一建筑设计院</li>
+                        <li><i class="fas fa-building"></i> 第二建筑设计院</li>
+                        <li><i class="fas fa-building"></i> 第三建筑设计院</li>
+                        <li><i class="fas fa-hard-hat"></i> 城设四所</li>
+                        <li><i class="fas fa-lightbulb"></i> 博创所</li>
+                        <li><i class="fas fa-draw-polygon"></i> 规划咨询设计院-工程咨询所</li>
+                        <li><i class="fas fa-drafting-compass"></i> 建筑四所</li>
+                        <li><i class="fas fa-hard-hat"></i> 城创七所</li>
+                        <li><i class="fas fa-hard-hat"></i> 城建五所</li>
+                    </ul>
+                    <div class="floor-map">
+                        <h3><i class="fas fa-map"></i> 8楼平面图</h3>
+                        <div class="map-container">
+                            <img src="8.jpg" alt="8楼平面图" class="map-image">
+                            <div class="map-overlay">
+                                <i class="fas fa-search-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 广东省广建设计集团有限公司 | 办公点位查询辅助系统 | 办公室技术支持 </p>
+        </footer>
+    </div>
+
+    <script>
+        // 完整的部门数据（5-8楼）
+        const departmentMap = {
+            // 5楼
+            '岩土二所': '5楼',
+            '创研二所': '5楼',
+            '创研一所': '5楼',
+            '人防设计所': '5楼',
+            '东莞分公司': '5楼',
+            '古色所': '5楼',
+            '建筑七所': '5楼',
+            '市政设计一院': '5楼',
+            '环保一所': '5楼',
+            '建筑一所': '5楼',
+            '第一综合设计院': '5楼',
+            '第一综合设计院设备所': '5楼',
+            '水利二所': '5楼',
+            '市政设计二院': '5楼',
+            '城建七所': '5楼',
+            '城建九所': '5楼',
+            
+            // 6楼
+            '审图公司': '6楼',
+            '市场营销中心': '6楼',
+            '环艺二所': '6楼',
+            '环艺一所': '6楼',
+            '环艺三所': '6楼',
+            '华凯数字所': '6楼',
+            '规划咨询设计院-市政规划所': '6楼',
+            '规划五所': '6楼',
+            '项目管理中心': '6楼',
+            '规划一所': '6楼',
+            '规划研究所': '6楼',
+            '智能化一所': '6楼',
+            
+            // 7楼
+            '办公室': '7楼',
+            '经营发展部': '7楼',
+            '党群人事部': '7楼',
+            '财务部': '7楼',
+            '科技信息部': '7楼',
+            '审图中心': '7楼',
+            '方案中心': '7楼',
+            
+            // 8楼
+            '规划二所': '8楼',
+            '城建一所': '8楼',
+            '设备二所': '8楼',
+            '设备一所': '8楼',
+            '第一建筑设计院': '8楼',
+            '第二建筑设计院': '8楼',
+            '第三建筑设计院': '8楼',
+            '城设四所': '8楼',
+            '博创所': '8楼',
+            '规划咨询设计院-工程咨询所': '8楼',
+            '建筑四所': '8楼',
+            '城创七所': '8楼',
+            '城建五所': '8楼'
+        };
+        
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultDiv = document.getElementById('result');
+        const floorCards = document.querySelectorAll('.floor-card');
+        const floorNavBtns = document.querySelectorAll('.floor-nav-btn');
+        
+        // 获取模态框元素
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("expandedImage");
+        const closeBtn = document.getElementsByClassName("close")[0];
+        
+        // 搜索函数
+        function searchDepartment() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (!searchTerm) {
+                resultDiv.innerHTML = "请输入部门名称";
+                resultDiv.classList.remove('highlight');
+                return;
+            }
+            
+            let found = false;
+            let resultHtml = "";
+            
+            // 遍历部门映射
+            for (const [department, floor] of Object.entries(departmentMap)) {
+                if (department.toLowerCase().includes(searchTerm)) {
+                    found = true;
+                    const highlightedDept = department.replace(
+                        new RegExp(searchTerm, 'gi'), 
+                        match => `<span class="match-highlight">${match}</span>`
+                    );
+                    
+                    resultHtml += `
+                        <div class="result-item fade-in">
+                            <div class="dept-info">
+                                <i class="fas fa-building"></i>
+                                <span>${highlightedDept}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <span class="floor-tag">${floor}</span>
+                                <button class="floor-nav-btn navigate-btn" data-floor="${floor.charAt(0)}">
+                                    <i class="fas fa-location-arrow"></i> 导航
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (found) {
+                resultDiv.innerHTML = resultHtml;
+                resultDiv.classList.add('highlight');
+                
+                // 添加导航按钮事件
+                document.querySelectorAll('.navigate-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const floor = this.getAttribute('data-floor');
+                        navigateToFloor(floor);
+                    });
+                });
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result-item">
+                        <i class="fas fa-exclamation-circle"></i>
+                        未找到包含"<span class="match-highlight">${searchTerm}</span>"的部门
+                    </div>
+                `;
+                resultDiv.classList.remove('highlight');
+            }
+        }
+        
+        // 楼层导航
+        function navigateToFloor(floorNum) {
+            // 关闭所有卡片
+            floorCards.forEach(card => {
+                card.classList.remove('open');
+            });
+            
+            // 打开目标楼层卡片
+            const targetCard = document.querySelector(`.floor-card[data-floor="${floorNum}"]`);
+            if (targetCard) {
+                targetCard.classList.add('open');
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // 更新导航按钮状态
+                floorNavBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if(btn.getAttribute('data-floor') === floorNum) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+        }
+        
+        // 图片放大功能
+        function setupImageModal() {
+            // 获取所有地图图片容器
+            const mapContainers = document.querySelectorAll('.map-container');
+            
+            mapContainers.forEach(container => {
+                container.addEventListener('click', function() {
+                    const img = this.querySelector('.map-image');
+                    modal.style.display = "block";
+                    modalImg.src = img.src;
+                });
+            });
+            
+            // 关闭按钮事件
+            closeBtn.onclick = function() {
+                modal.style.display = "none";
+            }
+            
+            // 点击模态框背景关闭
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        }
+        
+        // 事件监听
+        searchButton.addEventListener('click', searchDepartment);
+        searchInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchDepartment();
+            }
+        });
+        
+        // 楼层卡片折叠/展开
+        floorCards.forEach(card => {
+            const header = card.querySelector('.floor-header');
+            header.addEventListener('click', () => {
+                card.classList.toggle('open');
+            });
+        });
+        
+        // 楼层导航按钮
+        floorNavBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const floor = this.getAttribute('data-floor');
+                navigateToFloor(floor);
+            });
+        });
+        
+        // 初始打开5楼
+        window.onload = function() {
+            navigateToFloor('5');
+            setupImageModal();
+        };
+    </script>
+</body>
+</html>
